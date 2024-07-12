@@ -26,6 +26,16 @@ app.post('/chat', async (req, res) => {
     }
 });
 
+// Test endpoint to verify environment variable
+app.get('/test-api-key', (req, res) => {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (apiKey) {
+        res.send(`OPENAI_API_KEY is set: ${apiKey}`);
+    } else {
+        res.send('OPENAI_API_KEY is not set');
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
