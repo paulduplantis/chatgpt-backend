@@ -27,8 +27,35 @@
             text-align: center;
             margin-bottom: 20px;
             border-radius: 5px;
-            height: 285px; /* Increased height by 50% */
+            height: 350px; /* Adjusted height */
             box-sizing: border-box;
+        }
+        #chat-box {
+            width: 100%;
+            height: 100%; /* Adjusted to fit within the container */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #000; /* Black text inside chat box */
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-output {
+            flex-grow: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            min-height: 200px; /* Set minimum height */
+        }
+        #chat-input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         .carousel-section {
             margin-bottom: 40px;
@@ -93,27 +120,6 @@
             color: #fff;
             padding: 20px 0;
             text-align: center;
-        }
-        #chat-box {
-            width: 100%;
-            height: 100%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            box-sizing: border-box;
-            background-color: #fff;
-        }
-        #chat-output {
-            height: 150px;
-            overflow-y: auto;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        #chat-input {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
         }
     </style>
 </head>
@@ -287,6 +293,10 @@
             .then(data => {
                 chatOutput.innerHTML += `<div><b>ChatGPT:</b> ${data.reply}</div>`;
                 chatOutput.scrollTop = chatOutput.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                chatOutput.innerHTML += `<div><b>Error:</b> Failed to get a response from ChatGPT.</div>`;
             });
         }
     });
