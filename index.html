@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Roman History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+        }
+        .chat-container {
+            background-color: #333; /* Black background */
+            color: #fff; /* White text */
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            height: 285px; /* Increased height by 50% */
+            box-sizing: border-box;
+        }
+        .carousel-section {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .carousel-container {
+            display: inline-block;
+            text-align: left;
+            width: 75%;
+            overflow: hidden;
+            position: relative;
+        }
+        .carousel-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            width: 300px;
+            height: 250px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .carousel-item img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 10px;
+        }
+        .carousel-item h3 {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        .carousel-item p {
+            flex-grow: 1;
+            margin: 10px 0 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .carousel {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: scroll;
+            white-space: nowrap;
+            display: flex;
+            position: relative;
+            scroll-behavior: smooth;
+        }
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        .carousel-item {
+            display: inline-block;
+            min-width: 300px;
+            box-sizing: border-box;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        #chat-box {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+        #chat-output {
+            height: 150px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        #chat-input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to Ancient Roman History</h1>
+    <p>Your ultimate resource for all things Ancient Rome</p>
+</header>
+
+<main>
+    <div class="chat-container">
+        <h2>ChatGPT Embed</h2>
+        <div id="chat-box">
+            <div id="chat-output"></div>
+            <input type="text" id="chat-input" placeholder="Type your question here...">
+        </div>
+    </div>
+
+    <section class="carousel-section">
+        <div class="carousel-container">
+            <h2>Latest from Roman History Podcast</h2>
+            <div class="carousel">
+                <div class="carousel-inner" id="carousel-inner-podcasts">
+                    <!-- Podcast items will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="carousel-section">
+        <div class="carousel-container">
+            <h2>Roman History Books</h2>
+            <div class="carousel">
+                <div class="carousel-inner" id="carousel-inner-books">
+                    <!-- Book items will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>Contact us at: info@ancientromanhistory.com</p>
+    <p>Follow us on:
+        <a href="facebook-link">Facebook</a> |
+        <a href="twitter-link">Twitter</a> |
+        <a href="instagram-link">Instagram</a>
+    </p>
+</footer>
+
+<script>
+    const podcastFeedUrl = 'https://historyofrome.libsyn.com/rss';
+    const excludedPodcastTitle = 'The Storm Before The Storm: Chapter 1- The Beasts of Italy';
+
+    // Function to replace broken images with a default image
+    function handleImageError(event) {
+        event.target.src = 'https://raw.githubusercontent.com/paulduplantis/Roman-History-DI-Website/Deep-Inquiry-Websites/Roman%20History%20Books%20Thumbnail.png';
+    }
+
+    async function fetchPodcasts() {
+        try {
+            const response = await fetch(podcastFeedUrl);
+            if (!response.ok) {
+                console.error('Failed to fetch the RSS feed:', response.status, response.statusText);
+                return;
+            }
+            const text = await response.text();
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(text, 'application/xml');
+            let items = Array.from(xml.querySelectorAll('item'));
+
+            // Reverse the items to show oldest first
+            items.reverse();
+
+            const carouselInnerPodcasts = document.getElementById('carousel-inner-podcasts');
+
+            if (items.length === 0) {
+                console.warn('No RSS feed items found.');
+                return;
+            }
+
+            items.forEach(item => {
+                const title = item.querySelector('title').textContent;
+                if (title === excludedPodcastTitle) {
+                    return; // Skip this item
+                }
+                const link = item.querySelector('link').textContent;
+                const description = item.querySelector('description').textContent;
+                const imageUrl = 'https://raw.githubusercontent.com/paulduplantis/Roman-History-DI-Website/Deep-Inquiry-Websites/Roman%20History%20Podcast%20Thumbnail.png';
+
+                // Log image URL to console for debugging
+                console.log(`Image URL for ${title}: ${imageUrl}`);
+
+                const carouselItem = document.createElement('div');
+                carouselItem.classList.add('carousel-item');
+                carouselItem.innerHTML = `
+                    <div class="rss-item">
+                        <img src="${imageUrl}" alt="${title}" onerror="handleImageError(event)">
+                        <div>
+                            <h3>${title}</h3>
+                            <p>${description}</p>
+                            <a href="${link}" target="_blank">Listen Now</a>
+                        </div>
+                    </div>
+                `;
+                carouselInnerPodcasts.appendChild(carouselItem);
+            });
+        } catch (error) {
+            console.error('Error fetching or parsing RSS feed:', error);
+        }
+    }
+
+    // Example array of book data
+    const books = [
+        {
+            title: 'SPQR: A History of Ancient Rome',
+            author: 'Mary Beard',
+            imageUrl: 'https://raw.githubusercontent.com/paulduplantis/Roman-History-DI-Website/Deep-Inquiry-Websites/Roman%20History%20Books%20Thumbnail.png',
+            link: 'https://www.amazon.com/dp/0670024870'
+        },
+        {
+            title: 'The History of Rome',
+            author: 'Livy',
+            imageUrl: 'https://raw.githubusercontent.com/paulduplantis/Roman-History-DI-Website/Deep-Inquiry-Websites/Roman%20History%20Books%20Thumbnail.png',
+            link: 'https://www.amazon.com/dp/0140448098'
+        },
+        // Add more book data as needed
+    ];
+
+    function loadBooks() {
+        const carouselInnerBooks = document.getElementById('carousel-inner-books');
+        books.forEach(book => {
+            const carouselItem = document.createElement('div');
+            carouselItem.classList.add('carousel-item');
+            carouselItem.innerHTML = `
+                <img src="${book.imageUrl}" alt="${book.title}" onerror="handleImageError(event)">
+                <div>
+                    <h3>${book.title}</h3>
+                    <p>${book.author}</p>
+                    <a href="${book.link}" target="_blank">View on Amazon</a>
+                </div>
+            `;
+            carouselInnerBooks.appendChild(carouselItem);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchPodcasts();
+        loadBooks();
+    });
+
+    // ChatGPT Integration Script
+    const chatInput = document.getElementById('chat-input');
+    const chatOutput = document.getElementById('chat-output');
+
+    chatInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            const message = chatInput.value;
+            chatOutput.innerHTML += `<div><b>You:</b> ${message}</div>`;
+            chatInput.value = '';
+
+            fetch('https://chatgpt-backend-gamma.vercel.app/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatOutput.innerHTML += `<div><b>ChatGPT:</b> ${data.reply}</div>`;
+                chatOutput.scrollTop = chatOutput.scrollHeight;
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
