@@ -3,39 +3,35 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+  res.send('ChatGPT backend server is running.');
+});
+
 app.post('/chat', async (req, res) => {
-    const { message } = req.body;
+  const { message } = req.body;
 
-    try {
-        const response = await axios.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
-            prompt: message,
-            max_tokens: 150
-        }, {
-            headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-            }
-        });
+  try {
+    const response = await axios.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
+      prompt: message,
+      max_tokens: 100
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      }
+    });
 
-        res.json({ reply: response.data.choices[0].text });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch response from OpenAI' });
-    }
+    const reply = response.data.choices[0].text.trim();
+    res.json({ reply });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to get a response from ChatGPT.' });
+  }
 });
 
-// Test endpoint to verify environment variable
-app.get('/test-api-key', (req, res) => {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (apiKey) {
-        res.send(`OPENAI_API_KEY is set: ${apiKey}`);
-    } else {
-        res.send('OPENAI_API_KEY is not set');
-    }
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
