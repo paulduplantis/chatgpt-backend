@@ -11,7 +11,9 @@ app.get('/', (req, res) => {
   res.send('ChatGPT backend server is running.');
 });
 
-app.post('/api/chat', async (req, res) => { // Updated the route to /api/chat
+// This is a comment to trigger redeployment
+
+app.post('/api/chat', async (req, res) => {
   const { message } = req.body;
 
   try {
